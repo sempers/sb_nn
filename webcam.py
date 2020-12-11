@@ -50,6 +50,11 @@ threading.Thread(target=recognize_emotion_cycle).start()
 #основной цикл
 while True:
     ret, frame = video_capture.read()
+	
+    if frame is None:
+        print("No web camera found! Application terminates")
+        break
+		
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = faceCascade.detectMultiScale(
         gray,
@@ -65,7 +70,7 @@ while True:
         if len(classes_queue) > 0:
             class_name = classes_queue[0]
         else:
-            class_name='Not recognized'
+            class_name='Model offline'
         cv2.putText(frame, class_name, (x, y-10), cv2.FONT_HERSHEY_COMPLEX, 0.5, (36,255,12))
         try:
             face_img = cv2.resize(frame[x:x+w, y:y+h], (224, 224), interpolation=cv2.INTER_AREA)
