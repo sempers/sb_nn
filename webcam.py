@@ -65,23 +65,29 @@ while True:
     )
 
     # Рисуем рамку с эмоцией
+    o = 25 # Статический оффсет, т.к. opencv делает слишком сильный кроп, не соотв. датасету 
+
     for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        cv2.rectangle(frame, (x - o, y - o), (x + w + o, y + h +o), (0, 255, 0), 2)
         if len(classes_queue) > 0:
             class_name = classes_queue[0]
         else:
             class_name='Model offline'
-        cv2.putText(frame, class_name, (x, y-10), cv2.FONT_HERSHEY_COMPLEX, 0.5, (36,255,12))
+        cv2.putText(frame, class_name, (x-o, y-o-10), cv2.FONT_HERSHEY_COMPLEX, 0.5, (36,255,12))
         try:
-            face_img = cv2.resize(frame[x:x+w, y:y+h], (224, 224), interpolation=cv2.INTER_AREA)
+            face_img = cv2.resize(frame[x-o:x+w+o, y-o:y+h+o], (224, 224), interpolation=cv2.INTER_AREA)
             faces_queue.append(face_img)
         except: pass
 	
 	#Рисуем кадр
     cv2.imshow('Video', frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('q'):
         break
+    elif key == ord('p'):
+        cv2.imwrite(f"scr-{datetime.datetime.now().strftime('%Y-%M-%d-%H-%m-%s')}.jpg", frame)
+        print("screenshot saved")
 
 # Освобождаем ресурсы
 STOP_THREAD = True
